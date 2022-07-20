@@ -11,6 +11,8 @@
 
 Run `npm install`
 
+Run `npm start` to start it up
+
 App runs at `localhost:3000`
 
 **Useful resources**:
