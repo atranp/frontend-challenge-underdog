@@ -1,23 +1,80 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import PokemonInfo from "./Components/PokemonInfo";
+import PokemonCard from "./Components/PokemonCard";
+import { useEffect, useState } from "react";
+import { getData } from "./Services/api";
+import PageControl from "./Components/PageControl";
 
 function App() {
+  const [pokemonData, setPokemonData] = useState([]);
+  const [currentUrl, setCurrentUrl] = useState(
+    "https://pokeapi.co/api/v2/pokemon?limit=25&offset=0"
+  );
+  const [nextUrl, setNextUrl] = useState();
+  const [prevUrl, setPrevUrl] = useState();
+  const [pokemonInfo, setPokemonInfo] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await getData(currentUrl);
+      setNextUrl(response.next);
+      setPrevUrl(response.previous);
+
+      await setSinglePokemonData(response.results);
+    }
+    fetchData();
+  }, [currentUrl]);
+
+  const setSinglePokemonData = async (data) => {
+    let pokemonDataList = await Promise.all(
+      data.map(async (pokemon) => {
+        let gatherPokeData = await getData(pokemon.url);
+        return gatherPokeData;
+      })
+    );
+    setPokemonData(pokemonDataList);
+  };
+
+  const handleSetPokemonInfo = (pokemon) => {
+    setPokemonInfo({
+      name: pokemon.name,
+      imageUrl: pokemon.sprites.front_default,
+      statHp: pokemon.stats[0].base_stat,
+      statAttack: pokemon.stats[1].base_stat,
+      statDefense: pokemon.stats[2].base_stat,
+      statSpecialAttack: pokemon.stats[3].base_stat,
+      statSpecialDefense: pokemon.stats[4].base_stat,
+      statSpeed: pokemon.stats[5].base_stat,
+      types: pokemon.types.map((item) => item.type.name),
+      weight: pokemon.weight,
+    });
+  };
+
+  const handleNextPage = () => {
+    setCurrentUrl(nextUrl);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentUrl(prevUrl);
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="left-content">
+        <PokemonCard
+          pokemon={pokemonData}
+          setInfo={(pokemon) => handleSetPokemonInfo(pokemon)}
+        />
+        <PageControl
+          handleNextPage={handleNextPage}
+          handlePrevPage={handlePrevPage}
+          prevUrl={prevUrl}
+          nextUrl={nextUrl}
+        />
+      </div>
+      <div className="right-content">
+        <PokemonInfo pokemonInfo={pokemonInfo} />
+      </div>
     </div>
   );
 }
