@@ -4,6 +4,7 @@
 `ReactJS`, `PokeAPI`, `CSS`,
 
 **Installation**:
+
 `git clone [this repo]`
 
 `cd /frontend-challenge-underdog`
