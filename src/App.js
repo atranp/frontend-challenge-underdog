@@ -71,11 +71,11 @@ function App() {
     navigate(`/${prevPage - 1}`, { replace: true });
   };
 
-  async function handleNextPage(event) {
+  const handleNextPage = () => {
     const nextPage = params.page ? +params.page : 0;
 
     navigate(`/${nextPage + 1}`, { replace: true });
-  }
+  };
 
   return (
     <div className="App">
