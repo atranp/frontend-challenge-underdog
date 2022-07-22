@@ -32,13 +32,14 @@ function App() {
         return gatherPokeData;
       })
     );
+    console.log(pokemonDataList);
     setPokemonData(pokemonDataList);
   };
 
   const handleSetPokemonInfo = (pokemon) => {
     setPokemonInfo({
       name: pokemon.name,
-      imageUrl: pokemon.sprites.front_default,
+      imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`,
       statHp: pokemon.stats[0].base_stat,
       statAttack: pokemon.stats[1].base_stat,
       statDefense: pokemon.stats[2].base_stat,

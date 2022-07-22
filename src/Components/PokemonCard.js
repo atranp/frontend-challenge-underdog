@@ -13,7 +13,7 @@ const PokemonCard = ({ pokemon, setInfo }) => {
             <h2>{pokemon.id}</h2>
             <img
               alt="frontview of pokemon"
-              src={pokemon.sprites.front_default}
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemon.id}.svg`}
             />
             <h2>{pokemon.name}</h2>
           </div>
