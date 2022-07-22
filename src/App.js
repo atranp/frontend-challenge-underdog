@@ -4,26 +4,41 @@ import PokemonCard from "./Components/PokemonCard";
 import { useEffect, useState } from "react";
 import { getData } from "./Services/api";
 import PageControl from "./Components/PageControl";
+import { useParams, useNavigate } from "react-router-dom";
 
 function App() {
   const [pokemonData, setPokemonData] = useState([]);
-  const [currentUrl, setCurrentUrl] = useState(
-    "https://pokeapi.co/api/v2/pokemon?limit=25&offset=0"
-  );
+  const [currentUrl, setCurrentUrl] = useState("");
   const [nextUrl, setNextUrl] = useState();
   const [prevUrl, setPrevUrl] = useState();
   const [pokemonInfo, setPokemonInfo] = useState({});
+  const params = useParams();
+  const navigate = useNavigate();
+
+  console.log(params);
 
   useEffect(() => {
-    async function fetchData() {
-      const response = await getData(currentUrl);
-      setNextUrl(response.next);
-      setPrevUrl(response.previous);
+    if (currentUrl) {
+      async function fetchData() {
+        const response = await getData(currentUrl);
+        setNextUrl(response.next);
+        setPrevUrl(response.previous);
 
-      await setSinglePokemonData(response.results);
+        await setSinglePokemonData(response.results);
+      }
+
+      fetchData();
     }
-    fetchData();
   }, [currentUrl]);
+
+  // https://pokeapi.co/api/v2/pokemon?limit=25&offset=0
+  // useNavigate
+  useEffect(() => {
+    const offset = params.page ? params.page * 25 : 0;
+    setCurrentUrl(
+      `https://pokeapi.co/api/v2/pokemon?limit=25&offset=${offset}`
+    );
+  }, [params.page]);
 
   const setSinglePokemonData = async (data) => {
     let pokemonDataList = await Promise.all(
@@ -32,7 +47,6 @@ function App() {
         return gatherPokeData;
       })
     );
-    console.log(pokemonDataList);
     setPokemonData(pokemonDataList);
   };
 
@@ -51,13 +65,17 @@ function App() {
     });
   };
 
-  const handleNextPage = () => {
-    setCurrentUrl(nextUrl);
+  const handlePrevPage = () => {
+    const prevPage = params.page ? +params.page : 0;
+
+    navigate(`/${prevPage - 1}`, { replace: true });
   };
 
-  const handlePrevPage = () => {
-    setCurrentUrl(prevUrl);
-  };
+  async function handleNextPage(event) {
+    const nextPage = params.page ? +params.page : 0;
+
+    navigate(`/${nextPage + 1}`, { replace: true });
+  }
 
   return (
     <div className="App">
